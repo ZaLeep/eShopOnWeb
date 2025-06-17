@@ -56,13 +56,13 @@ jobs:
         run: dotnet build ./src/Web/Web.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./src/Web/Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./src/Web/Web.csproj -c Release -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: dotnet-app
+          path: ./publish
 
   deploy:
     permissions:
@@ -77,8 +77,8 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-          path: ./.net-app
+          name: dotnet-app
+          path: ./dotnet-app
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -86,4 +86,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: './.net-app'
+          package: ./dotnet-app
